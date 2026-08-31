@@ -1,0 +1,76 @@
+/* Admin control room styles */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 860px) {
+  .admin-grid { grid-template-columns: 340px 1fr; align-items: start; }
+}
+
+.mode-readout {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mode-readout .val { color: var(--red-bright); font-size: 15px; margin-left: 6px; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  background: var(--bg-void);
+}
+.list-row.is-selected { border-color: var(--purple-bright); background: rgba(123,63,176,0.08); }
+.list-row .name { font-weight: 600; }
+.list-row .actions { display: flex; gap: 6px; }
+
+.poll-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 10px; background: var(--bg-void); }
+.poll-card.is-active { border-color: var(--red-bright); box-shadow: 0 0 0 1px var(--red-bright) inset; }
+.poll-card .q { font-weight: 600; margin-bottom: 6px; }
+.poll-card .opts { color: var(--text-dim); font-size: 13px; margin-bottom: 8px; }
+
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+.confirm-overlay.show { display: flex; }
+.confirm-box {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--red-bright);
+  border-radius: var(--radius);
+  padding: 20px;
+  max-width: 340px;
+  width: 100%;
+}
+.confirm-box p { margin-top: 0; }
+
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.chip.on { background: var(--red); color: #fff; border-color: var(--red-bright); }

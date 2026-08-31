@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herrarnas II — Skärm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/screen.css">
+</head>
+<body class="screen-body">
+<div class="screen-stage">
+
+  <div id="viewIdle" class="screen-idle">
+    <div class="brand-big">HERRARNAS <span class="roman">II</span></div>
+    <div class="tagline">CLASSIFIED // PRIVATE // PROTOCOL</div>
+  </div>
+
+  <div id="viewMessage" class="screen-message hidden"><span id="messageText"></span></div>
+
+  <div id="viewIntro" class="hidden center">
+    <div class="brand-big" style="font-size:5vw;">INTRO</div>
+    <div class="tagline">Filmen spelas upp lokalt (VLC / Alt+Tab)</div>
+  </div>
+
+  <div id="viewLive" class="hidden" style="position:absolute; inset:0;">
+    <video id="liveVideo" class="screen-video" autoplay playsinline></video>
+    <div id="liveBadge" class="screen-live-badge"><span class="dot rec"></span> HERRARNAS LIVE</div>
+    <div id="voteOverlay" class="screen-vote-overlay hidden"></div>
+  </div>
+
+  <div id="viewResult" class="hidden center" style="width:80vw;">
+    <div class="screen-result-title">RESULTAT</div>
+    <p id="resultQuestion" style="font-size:2.6vw; margin-bottom:2vw;"></p>
+    <div id="resultBars"></div>
+    <div class="screen-selected" style="margin-top:3vw;">
+      <div class="lbl">VALD DELTAGARE</div>
+      <div class="name" id="selectedName">–</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/webrtc.js"></script>
+<script src="js/screen.js"></script>
+</body>
+</html>

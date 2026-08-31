@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Herrarnas — Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/participant.css">
+<style>
+  #selfVideo { width:100%; border-radius:4px; border:1px solid var(--border-bright); background:#000; aspect-ratio: 3/4; object-fit: cover; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">HERRARNAS DEVICE</div>
+  <h1 class="brand">HERRARNAS</h1>
+
+  <div class="panel">
+    <video id="selfVideo" autoplay playsinline muted></video>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-purple" id="broadcastBtn">STARTA LIVE</button>
+    </div>
+    <p class="muted" id="broadcastStatus" style="margin-top:10px;"><span class="dot off"></span> EJ SÄNDANDE</p>
+  </div>
+
+  <div class="panel">
+    <p class="panel-title">INSTRUKTION</p>
+    <div class="instruction-box" id="instructionText" style="font-size:16px;">–</div>
+  </div>
+
+  <div class="panel hidden" id="pollSection">
+    <p class="panel-title">AKTUELL OMRÖSTNING</p>
+    <p id="pollQuestion" style="font-weight:600; margin-top:0;"></p>
+    <div id="pollOptionsList" class="muted"></div>
+  </div>
+
+  <p class="footer-note">Herrarnas II · Broadcast Unit</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/webrtc.js"></script>
+<script src="js/herrarna.js"></script>
+</body>
+</html>
