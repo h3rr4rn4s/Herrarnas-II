@@ -147,9 +147,18 @@ const HScreenRTC = (() => {
   }
 
   async function connectViewer(videoEl, offer) {
-    if (pc && pc.currentRemoteDescription && lastOfferKey === JSON.stringify(offer)) return;
+    const offerKey = JSON.stringify(offer);
+    if (lastOfferKey === offerKey) return; // redan uppkopplad mot/på väg mot denna offer
 
-    resetViewer(videoEl);
+    resetViewer(videoEl); // OBS: nollställer lastOfferKey, därför sätts den igen direkt nedan
+
+    // Sätts DIREKT, innan några await-anrop. Annars hinner Firestores
+    // onSnapshot-lyssnare (som triggas igen av att VI skriver "answer" till
+    // samma dokument några rader ner) tro att en ny offer kommit in och
+    // startar om hela anslutningen mitt i — vilket orsakade en oändlig
+    // reconnect-loop (syns som "play() interrupted by pause()" i konsolen).
+    lastOfferKey = offerKey;
+
     pc = new RTCPeerConnection(ICE_SERVERS);
 
     pc.ontrack = (e) => {
@@ -159,9 +168,6 @@ const HScreenRTC = (() => {
       videoEl.volume = 0;
       videoEl.play()
         .then(() => {
-          // Meddela screen.js att en ny ström är redo, så ljud/volym direkt
-          // synkas mot det läge admin redan valt (t.ex. om admin klickade
-          // "LIVE" INNAN Herrarnas startade sändningen).
           videoEl.dispatchEvent(new Event('hstream-connected'));
         })
         .catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
@@ -177,7 +183,6 @@ const HScreenRTC = (() => {
     await pc.setLocalDescription(answer);
     await sigDoc().set({ answer: { sdp: answer.sdp, type: answer.type } }, { merge: true });
 
-    lastOfferKey = JSON.stringify(offer);
     broadcasterCandidatesUnsub = broadcasterCandidatesCol().onSnapshot((csnap) => {
       csnap.docChanges().forEach(change => {
         if (change.type === 'added' && pc) {
@@ -197,7 +202,7 @@ const HScreenRTC = (() => {
       }
 
       const offerKey = JSON.stringify(data.offer);
-      if (pc && pc.currentRemoteDescription && lastOfferKey === offerKey) return;
+      if (lastOfferKey === offerKey) return;
       await connectViewer(videoEl, data.offer);
     });
   }
