@@ -78,6 +78,8 @@ const HBroadcastRTC = (() => {
     pc.onicecandidate = (e) => {
       if (e.candidate) broadcasterCandidatesCol().add(e.candidate.toJSON());
     };
+    pc.oniceconnectionstatechange = () => console.log('[webrtc][broadcaster] iceConnectionState:', pc.iceConnectionState);
+    pc.onconnectionstatechange = () => console.log('[webrtc][broadcaster] connectionState:', pc.connectionState);
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
@@ -130,9 +132,19 @@ const HScreenRTC = (() => {
       pc = new RTCPeerConnection(ICE_SERVERS);
 
       pc.ontrack = (e) => {
+        const isFirstConnection = !videoEl.srcObject;
         videoEl.srcObject = e.streams[0];
-        videoEl.play().catch(() => {});
+        if (isFirstConnection) {
+          // Browsers blockerar tyst autoplay av video MED ljud om ingen
+          // interagerat med sidan. Vi startar därför muted (så bilden
+          // garanterat syns) — operatören kan aktivera ljud manuellt via
+          // knappen i screen.html.
+          videoEl.muted = true;
+        }
+        videoEl.play().catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
       };
+      pc.oniceconnectionstatechange = () => console.log('[webrtc][viewer] iceConnectionState:', pc.iceConnectionState);
+      pc.onconnectionstatechange = () => console.log('[webrtc][viewer] connectionState:', pc.connectionState);
       pc.onicecandidate = (e) => {
         if (e.candidate) viewerCandidatesCol().add(e.candidate.toJSON());
       };

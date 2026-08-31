@@ -79,6 +79,7 @@ function render() {
     showOnly('#viewLive');
     $('#liveVideo').classList.add('hidden');
     $('#liveBadge').classList.add('hidden');
+    $('#unmuteBtn').classList.add('hidden');
     watchActivePoll();
   } else if (s.mode === 'result') {
     showOnly('#viewResult');
@@ -91,7 +92,17 @@ function render() {
   if (s.mode === 'live') {
     $('#liveVideo').classList.remove('hidden');
     $('#liveBadge').classList.remove('hidden');
+    if ($('#liveVideo').muted) $('#unmuteBtn').classList.remove('hidden');
   }
+}
+
+function initUnmuteButton() {
+  $('#unmuteBtn').addEventListener('click', () => {
+    const v = $('#liveVideo');
+    v.muted = false;
+    v.play().catch(err => console.warn('[screen] kunde inte spela upp med ljud:', err));
+    $('#unmuteBtn').classList.add('hidden');
+  });
 }
 
 function initScreenPage() {
@@ -99,6 +110,7 @@ function initScreenPage() {
     HState.listenEventState(state => { SC_STATE = state; render(); });
     HState.listenParticipants(list => { SC_PARTICIPANTS = list; renderSelectedParticipant(); });
     HScreenRTC.initViewer($('#liveVideo'));
+    initUnmuteButton();
   });
 }
 
