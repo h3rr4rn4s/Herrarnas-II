@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Anmälan — Herrarnas II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">LIMITED SEATING</div>
+  <h1 class="brand">ANMÄLAN</h1>
+  <p class="subhead"><span id="seatsLeft">–</span> / <span id="seatsTotal">–</span> platser kvar</p>
+
+  <form id="regForm" class="panel" style="margin-top:20px;">
+    <label for="regName">Namn</label>
+    <input type="text" id="regName" required>
+    <label for="regNote">Övrigt (valfritt)</label>
+    <textarea id="regNote" placeholder="Allergier, önskemål, etc."></textarea>
+    <button type="submit" class="btn btn-primary" id="regSubmitBtn">ANMÄL MIG</button>
+  </form>
+
+  <div class="panel hidden" id="successBox">
+    <p class="panel-title">DU ÄR ANMÄLD</p>
+    <p>Din plats: <b id="seatNumber">–</b></p>
+    <p class="muted">Håll utkik efter vidare instruktioner.</p>
+  </div>
+
+  <div class="panel hidden" id="closedNotice"></div>
+
+  <p class="footer-note">Herrarnas II · Secret // Private // Protocol</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/register.js"></script>
+</body>
+</html>

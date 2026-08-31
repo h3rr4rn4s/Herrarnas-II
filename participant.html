@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Herrarnas II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/participant.css">
+</head>
+<body>
+<div class="wrap">
+  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+      <div class="eyebrow">LIVE PROTOCOL</div>
+      <h1 class="brand">HERRARNAS <span class="roman">II</span></h1>
+      <p class="subhead">Inloggad som <b id="welcomeName">–</b></p>
+    </div>
+    <button class="btn btn-sm btn-ghost" id="logoutBtn">LOGGA UT</button>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="panel">
+    <p class="panel-title">STATUS <span class="badge off" id="modeBadge">IDLE</span></p>
+    <div class="instruction-box" id="instructionText">–</div>
+  </div>
+
+  <div class="panel hidden" id="selectedBox">
+    <div class="selected-banner">
+      <div class="eyebrow" style="justify-content:center;">VALD</div>
+      <div class="big" id="selectedName">–</div>
+    </div>
+  </div>
+
+  <div class="panel hidden" id="pollSection">
+    <p class="panel-title">OMRÖSTNING</p>
+    <p id="pollQuestion" style="font-size:18px; font-weight:600; margin-top:0;"></p>
+    <div id="pollOptions"></div>
+    <div id="pollResults" class="hidden"></div>
+    <div id="youVoted" class="you-voted hidden" style="margin-top:8px;"></div>
+  </div>
+
+  <p class="footer-note">Herrarnas II · Secret // Private // Protocol</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/polls.js"></script>
+<script src="js/participant.js"></script>
+</body>
+</html>

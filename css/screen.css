@@ -1,0 +1,137 @@
+/* Projector screen — fullscreen, readable from across the dance floor */
+
+html, body.screen-body {
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.screen-stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #0d0d10 0%, #000 100%);
+}
+
+.screen-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+.screen-idle {
+  text-align: center;
+}
+.screen-idle .brand-big {
+  font-family: var(--font-mono);
+  font-size: 7vw;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-shadow: 0 0 40px rgba(179,34,58,0.35);
+}
+.screen-idle .brand-big .roman { color: var(--red-bright); }
+.screen-idle .tagline {
+  font-family: var(--font-mono);
+  font-size: 1.4vw;
+  letter-spacing: 0.3em;
+  color: var(--text-faint);
+  margin-top: 1.2vw;
+  text-transform: uppercase;
+}
+
+.screen-message {
+  max-width: 82vw;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 4.2vw;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 30px rgba(179,34,58,0.3);
+}
+
+.screen-live-badge {
+  position: absolute;
+  top: 4vh;
+  left: 4vw;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 1.8vw;
+  letter-spacing: 0.12em;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 10px 18px;
+  border: 1px solid var(--red-bright);
+  border-radius: 4px;
+  z-index: 5;
+}
+
+.screen-vote-overlay {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(70vw, 900px);
+  background: rgba(10,10,12,0.88);
+  border: 1px solid var(--red-bright);
+  border-radius: 6px;
+  padding: 2.2vw 2.6vw;
+  z-index: 5;
+  backdrop-filter: blur(4px);
+}
+.screen-vote-overlay .q {
+  font-size: 2.4vw;
+  font-weight: 700;
+  margin-bottom: 1vw;
+}
+.screen-vote-overlay .opt-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 1.5vw;
+}
+.screen-vote-overlay .opt-row .lbl { width: 30%; flex-shrink: 0; }
+.screen-vote-overlay .opt-row .track { flex: 1; height: 1.4vw; background: #000; border: 1px solid var(--border-bright); border-radius: 4px; overflow: hidden; }
+.screen-vote-overlay .opt-row .fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--red-bright)); }
+.screen-vote-overlay .opt-row .pct { width: 8%; text-align: right; }
+
+.screen-vote-overlay.no-result .fill { display: none; }
+.screen-vote-overlay.no-result .pct { display: none; }
+
+.screen-result-title {
+  font-family: var(--font-mono);
+  font-size: 2.4vw;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red-bright);
+  margin-bottom: 2vw;
+  text-align: center;
+}
+
+.screen-selected {
+  text-align: center;
+}
+.screen-selected .lbl {
+  font-family: var(--font-mono);
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  font-size: 1.6vw;
+  text-transform: uppercase;
+}
+.screen-selected .name {
+  font-family: var(--font-mono);
+  font-size: 6vw;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(123,63,176,0.5);
+}
+
+.hidden { display: none !important; }

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Logga in — Herrarnas II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">ACCESS PROTOCOL</div>
+  <h1 class="brand">LOGGA IN</h1>
+
+  <div class="btn-row" style="margin:18px 0;">
+    <button class="btn is-active" id="tabParticipant">DELTAGARE</button>
+    <button class="btn" id="tabAdmin">ADMIN</button>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <form id="participantForm" class="panel">
+    <label for="pUsername">Användarnamn</label>
+    <input type="text" id="pUsername" autocomplete="username" required>
+    <label for="pCode">Personlig kod</label>
+    <input type="password" id="pCode" autocomplete="current-password" required inputmode="numeric">
+    <button type="submit" class="btn btn-primary">LOGGA IN</button>
+  </form>
+
+  <form id="adminForm" class="panel hidden">
+    <label for="aEmail">E-post</label>
+    <input type="email" id="aEmail" autocomplete="username" required>
+    <label for="aPassword">Lösenord</label>
+    <input type="password" id="aPassword" autocomplete="current-password" required>
+    <button type="submit" class="btn btn-primary">ADMIN — LOGGA IN</button>
+  </form>
+
+  <p class="footer-note">Herrarnas II · Secret // Private // Protocol</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  const tabParticipant = document.getElementById('tabParticipant');
+  const tabAdmin = document.getElementById('tabAdmin');
+  const participantForm = document.getElementById('participantForm');
+  const adminForm = document.getElementById('adminForm');
+  const errorBox = document.getElementById('errorBox');
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.add('show');
+  }
+  function clearError() { errorBox.classList.remove('show'); }
+
+  tabParticipant.addEventListener('click', () => {
+    tabParticipant.classList.add('is-active'); tabAdmin.classList.remove('is-active');
+    participantForm.classList.remove('hidden'); adminForm.classList.add('hidden');
+    clearError();
+  });
+  tabAdmin.addEventListener('click', () => {
+    tabAdmin.classList.add('is-active'); tabParticipant.classList.remove('is-active');
+    adminForm.classList.remove('hidden'); participantForm.classList.add('hidden');
+    clearError();
+  });
+
+  participantForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+    const btn = participantForm.querySelector('button');
+    btn.disabled = true;
+    try {
+      await HAuth.participantLogin(
+        document.getElementById('pUsername').value,
+        document.getElementById('pCode').value
+      );
+      location.href = 'participant.html';
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  adminForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+    const btn = adminForm.querySelector('button');
+    btn.disabled = true;
+    try {
+      await HAuth.adminLogin(
+        document.getElementById('aEmail').value,
+        document.getElementById('aPassword').value
+      );
+      location.href = 'admin.html';
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

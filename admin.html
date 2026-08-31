@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Admin — Herrarnas II</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="wrap wide">
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+    <div>
+      <div class="eyebrow">CONTROL ROOM</div>
+      <h1 class="brand">ADMIN</h1>
+      <p class="subhead" id="adminEmail">–</p>
+    </div>
+    <button class="btn btn-sm btn-ghost" id="logoutBtn">LOGGA UT</button>
+  </div>
+
+  <div class="mode-readout" style="margin-bottom:18px;">CURRENT MODE:<span class="val" id="modeReadout">IDLE</span></div>
+
+  <div class="admin-grid">
+    <!-- LEFT COLUMN: SCREEN CONTROL -->
+    <div>
+      <div class="panel">
+        <p class="panel-title">SCREEN</p>
+        <div class="grid-3">
+          <button class="btn screen-mode-btn" data-mode="idle">IDLE</button>
+          <button class="btn screen-mode-btn" data-mode="intro">INTRO</button>
+          <button class="btn screen-mode-btn" data-mode="message">MESSAGE</button>
+          <button class="btn screen-mode-btn" data-mode="live">LIVE</button>
+          <button class="btn screen-mode-btn" data-mode="vote">VOTE</button>
+          <button class="btn screen-mode-btn" data-mode="result">RESULT</button>
+        </div>
+        <hr class="hr">
+        <div class="btn-row">
+          <button class="btn btn-sm" id="toggleOverlayBtn">TOGGLE VOTE OVERLAY</button>
+          <button class="btn btn-sm" id="toggleResultBtn">TOGGLE RESULT VISIBLE</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">MEDDELANDE TILL PROJEKTORN</p>
+        <textarea id="messageInput" placeholder="T.ex. HERRARNAS BEHÖVER EN FRIVILLIG."></textarea>
+        <button class="btn btn-primary" id="sendMessageBtn">VISA PÅ PROJEKTORN</button>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">INSTRUKTION TILL DELTAGARE</p>
+        <textarea id="instructionInput" placeholder="T.ex. Gå ner till dansgolvet och sätt dig."></textarea>
+        <button class="btn btn-primary" id="saveInstructionBtn">PUBLICERA</button>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">LIVESTREAM</p>
+        <p class="muted">Startas från Herrarnas-enheten (/herrarna.html). Här styr du bara vad projektorn visar.</p>
+        <button class="btn btn-purple" id="showLiveBtn">VISA LIVE PÅ PROJEKTORN</button>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: POLLS / PARTICIPANTS / REGISTRATIONS -->
+    <div>
+      <div class="panel">
+        <p class="panel-title">SKAPA OMRÖSTNING</p>
+        <label for="pollQuestionInput">Fråga</label>
+        <input type="text" id="pollQuestionInput" placeholder="T.ex. Ska Erik byta glas?">
+        <label>Alternativ</label>
+        <div id="optionFields"></div>
+        <button type="button" class="btn btn-sm" id="addOptionBtn" style="margin-bottom:12px;">+ LÄGG TILL ALTERNATIV</button>
+        <button class="btn btn-primary" id="createPollBtn">SKAPA OMRÖSTNING</button>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">OMRÖSTNINGAR</p>
+        <div id="pollsList"></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">DELTAGARVAL</p>
+        <div class="btn-row" style="margin-bottom:12px;">
+          <button class="btn btn-purple" id="randomParticipantBtn">SLUMPA DELTAGARE</button>
+          <button class="btn btn-danger" id="clearSelectionBtn">ÅTERSTÄLL VAL</button>
+        </div>
+        <div id="participantsList"></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">LÄGG TILL DELTAGARE MANUELLT</p>
+        <label for="newPName">Namn</label>
+        <input type="text" id="newPName">
+        <label for="newPUsername">Användarnamn</label>
+        <input type="text" id="newPUsername">
+        <label for="newPCode">Personlig kod</label>
+        <input type="text" id="newPCode">
+        <button class="btn btn-primary" id="addParticipantBtn">LÄGG TILL</button>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title">REGISTRERING (ANMÄLNINGSFORMULÄR)</p>
+        <div class="btn-row" style="align-items:center; margin-bottom:12px;">
+          <label style="display:flex; align-items:center; gap:8px; margin:0;">
+            <input type="checkbox" id="registrationOpenToggle" style="width:auto; margin:0;"> ÖPPEN FÖR ANMÄLAN
+          </label>
+        </div>
+        <label for="maxSeatsInput">Max antal platser</label>
+        <input type="number" id="maxSeatsInput" min="1">
+        <button class="btn btn-sm" id="saveRegSettingsBtn">SPARA</button>
+        <hr class="hr">
+        <div id="registrationsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer-note">Herrarnas II · Admin Control Room</p>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmText">Är du säker?</p>
+    <div class="btn-row">
+      <button class="btn" id="confirmNo">AVBRYT</button>
+      <button class="btn btn-danger" id="confirmYes">JA, GÖR DET</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bg-panel-2); border:1px solid var(--red-bright); padding:10px 18px; border-radius:4px; font-family:var(--font-mono); font-size:12px; letter-spacing:.05em; opacity:0; pointer-events:none; transition:opacity .2s; z-index:60;"></div>
+<style>#toast.show{opacity:1;}</style>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/polls.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
