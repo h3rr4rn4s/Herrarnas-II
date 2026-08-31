@@ -20,6 +20,9 @@
   <div id="viewMessage" class="screen-message hidden"><span id="messageText"></span></div>
 
   <div id="viewIntro" class="hidden center">
+    <video id="introVideo" class="screen-video" autoplay playsinline muted preload="auto">
+      <source src="media/copy_168984B2-F4E1-4620-9AB4-C4CC751F80E8.mov" type="video/mp4">
+    </video>
     <div class="brand-big" style="font-size:5vw;">INTRO</div>
     <div class="tagline">Filmen spelas upp lokalt (VLC / Alt+Tab)</div>
   </div>
@@ -27,7 +30,6 @@
   <div id="viewLive" class="hidden" style="position:absolute; inset:0;">
     <video id="liveVideo" class="screen-video" autoplay playsinline muted></video>
     <div id="liveBadge" class="screen-live-badge"><span class="dot rec"></span> HERRARNAS LIVE</div>
-    <button id="unmuteBtn" class="btn btn-sm hidden" style="position:absolute; bottom:4vh; right:4vw; z-index:6; width:auto;">🔊 AKTIVERA LJUD</button>
     <div id="voteOverlay" class="screen-vote-overlay hidden"></div>
   </div>
 

@@ -5,6 +5,7 @@
 let SC_STATE = HState.DEFAULT_EVENT_STATE;
 let SC_POLL_UNSUB = null;
 let SC_PARTICIPANTS = [];
+let SC_LAST_MODE = null;
 
 function $(sel) { return document.querySelector(sel); }
 function escapeHtml(s) {
@@ -63,8 +64,43 @@ function renderSelectedParticipant() {
   $('#selectedName').textContent = p ? p.name : '—';
 }
 
+function syncLiveVideoAudioState(mode) {
+  const liveVideo = $('#liveVideo');
+  if (!liveVideo) return;
+
+  if (mode === 'live') {
+    liveVideo.muted = false;
+    liveVideo.volume = 1;
+    return;
+  }
+
+  liveVideo.muted = true;
+  liveVideo.volume = 0;
+  if (!liveVideo.paused) {
+    liveVideo.pause();
+  }
+}
+
+function syncIntroVideoState(previousMode, nextMode) {
+  const introVideo = $('#introVideo');
+  if (!introVideo) return;
+
+  if (nextMode === 'intro') {
+    if (previousMode !== 'intro' || introVideo.paused || introVideo.ended) {
+      introVideo.currentTime = 0;
+      introVideo.muted = false;
+      introVideo.play().catch(() => {});
+    }
+    return;
+  }
+
+  introVideo.pause();
+  introVideo.currentTime = 0;
+}
+
 function render() {
   const s = SC_STATE;
+  const previousMode = SC_LAST_MODE;
 
   if (s.mode === 'message') {
     showOnly('#viewMessage');
@@ -79,7 +115,6 @@ function render() {
     showOnly('#viewLive');
     $('#liveVideo').classList.add('hidden');
     $('#liveBadge').classList.add('hidden');
-    $('#unmuteBtn').classList.add('hidden');
     watchActivePoll();
   } else if (s.mode === 'result') {
     showOnly('#viewResult');
@@ -92,17 +127,11 @@ function render() {
   if (s.mode === 'live') {
     $('#liveVideo').classList.remove('hidden');
     $('#liveBadge').classList.remove('hidden');
-    if ($('#liveVideo').muted) $('#unmuteBtn').classList.remove('hidden');
   }
-}
 
-function initUnmuteButton() {
-  $('#unmuteBtn').addEventListener('click', () => {
-    const v = $('#liveVideo');
-    v.muted = false;
-    v.play().catch(err => console.warn('[screen] kunde inte spela upp med ljud:', err));
-    $('#unmuteBtn').classList.add('hidden');
-  });
+  syncLiveVideoAudioState(s.mode);
+  syncIntroVideoState(previousMode, s.mode);
+  SC_LAST_MODE = s.mode;
 }
 
 function initScreenPage() {
@@ -110,7 +139,6 @@ function initScreenPage() {
     HState.listenEventState(state => { SC_STATE = state; render(); });
     HState.listenParticipants(list => { SC_PARTICIPANTS = list; renderSelectedParticipant(); });
     HScreenRTC.initViewer($('#liveVideo'));
-    initUnmuteButton();
   });
 }
 

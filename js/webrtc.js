@@ -121,50 +121,81 @@ const HBroadcastRTC = (() => {
 // ---------------------------------------------------------------------------
 const HScreenRTC = (() => {
   let pc = null;
+  let broadcasterCandidatesUnsub = null;
+  let lastOfferKey = null;
 
-  async function initViewer(videoEl) {
-    sigDoc().onSnapshot(async (snap) => {
-      const data = snap.data();
-      if (!data || !data.offer) return;
-      if (pc && pc.currentRemoteDescription) return; // redan kopplad mot denna offer
+  function resetViewer(videoEl) {
+    if (broadcasterCandidatesUnsub) {
+      broadcasterCandidatesUnsub();
+      broadcasterCandidatesUnsub = null;
+    }
+    if (pc) {
+      pc.close();
+      pc = null;
+    }
+    if (videoEl) {
+      const stream = videoEl.srcObject;
+      if (stream && typeof stream.getTracks === 'function') {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      videoEl.pause();
+      videoEl.srcObject = null;
+      videoEl.muted = true;
+      videoEl.volume = 0;
+    }
+    lastOfferKey = null;
+  }
 
-      if (pc) { pc.close(); }
-      pc = new RTCPeerConnection(ICE_SERVERS);
+  async function connectViewer(videoEl, offer) {
+    if (pc && pc.currentRemoteDescription && lastOfferKey === JSON.stringify(offer)) return;
 
-      pc.ontrack = (e) => {
-        const isFirstConnection = !videoEl.srcObject;
-        videoEl.srcObject = e.streams[0];
-        if (isFirstConnection) {
-          // Browsers blockerar tyst autoplay av video MED ljud om ingen
-          // interagerat med sidan. Vi startar därför muted (så bilden
-          // garanterat syns) — operatören kan aktivera ljud manuellt via
-          // knappen i screen.html.
-          videoEl.muted = true;
+    resetViewer(videoEl);
+    pc = new RTCPeerConnection(ICE_SERVERS);
+
+    pc.ontrack = (e) => {
+      const stream = e.streams[0];
+      videoEl.srcObject = stream;
+      videoEl.muted = true;
+      videoEl.volume = 0;
+      videoEl.play().catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
+    };
+    pc.oniceconnectionstatechange = () => console.log('[webrtc][viewer] iceConnectionState:', pc.iceConnectionState);
+    pc.onconnectionstatechange = () => console.log('[webrtc][viewer] connectionState:', pc.connectionState);
+    pc.onicecandidate = (e) => {
+      if (e.candidate) viewerCandidatesCol().add(e.candidate.toJSON());
+    };
+
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await sigDoc().set({ answer: { sdp: answer.sdp, type: answer.type } }, { merge: true });
+
+    lastOfferKey = JSON.stringify(offer);
+    broadcasterCandidatesUnsub = broadcasterCandidatesCol().onSnapshot((csnap) => {
+      csnap.docChanges().forEach(change => {
+        if (change.type === 'added' && pc) {
+          pc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(() => {});
         }
-        videoEl.play().catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
-      };
-      pc.oniceconnectionstatechange = () => console.log('[webrtc][viewer] iceConnectionState:', pc.iceConnectionState);
-      pc.onconnectionstatechange = () => console.log('[webrtc][viewer] connectionState:', pc.connectionState);
-      pc.onicecandidate = (e) => {
-        if (e.candidate) viewerCandidatesCol().add(e.candidate.toJSON());
-      };
-
-      await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      await sigDoc().set({ answer: { sdp: answer.sdp, type: answer.type } }, { merge: true });
-
-      broadcasterCandidatesCol().onSnapshot((csnap) => {
-        csnap.docChanges().forEach(change => {
-          if (change.type === 'added' && pc) {
-            pc.addIceCandidate(new RTCIceCandidate(change.doc.data())).catch(() => {});
-          }
-        });
       });
     });
   }
 
-  return { initViewer };
+  async function initViewer(videoEl) {
+    sigDoc().onSnapshot(async (snap) => {
+      const data = snap.data() || {};
+
+      if (!data.live || !data.offer) {
+        resetViewer(videoEl);
+        return;
+      }
+
+      const offerKey = JSON.stringify(data.offer);
+      if (pc && pc.currentRemoteDescription && lastOfferKey === offerKey) return;
+      await connectViewer(videoEl, data.offer);
+    });
+  }
+
+  return { initViewer, resetViewer };
 })();
 
 window.HBroadcastRTC = HBroadcastRTC;
