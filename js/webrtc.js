@@ -61,12 +61,13 @@ const HBroadcastRTC = (() => {
   let unsubCandidates = null;
 
   async function start(videoEl, { audio = true, video = true } = {}) {
+    await stop(); // städa ev. gammal session INNAN vi hämtar en ny kameraström
+
     localStream = await navigator.mediaDevices.getUserMedia({ video, audio });
     videoEl.srcObject = localStream;
     videoEl.muted = true; // undvik egen-eko på broadcaster-enheten
     await videoEl.play().catch(() => {});
 
-    await stop(); // städa ev. gammal session
     await clearCollection(broadcasterCandidatesCol());
     await clearCollection(viewerCandidatesCol());
     await sigDoc().set({ offer: null, answer: null, live: true }, { merge: true });
