@@ -157,7 +157,14 @@ const HScreenRTC = (() => {
       videoEl.srcObject = stream;
       videoEl.muted = true;
       videoEl.volume = 0;
-      videoEl.play().catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
+      videoEl.play()
+        .then(() => {
+          // Meddela screen.js att en ny ström är redo, så ljud/volym direkt
+          // synkas mot det läge admin redan valt (t.ex. om admin klickade
+          // "LIVE" INNAN Herrarnas startade sändningen).
+          videoEl.dispatchEvent(new Event('hstream-connected'));
+        })
+        .catch(err => console.warn('[webrtc][viewer] videoEl.play() misslyckades:', err));
     };
     pc.oniceconnectionstatechange = () => console.log('[webrtc][viewer] iceConnectionState:', pc.iceConnectionState);
     pc.onconnectionstatechange = () => console.log('[webrtc][viewer] connectionState:', pc.connectionState);

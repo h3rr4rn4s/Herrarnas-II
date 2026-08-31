@@ -68,16 +68,26 @@ function syncLiveVideoAudioState(mode) {
   const liveVideo = $('#liveVideo');
   if (!liveVideo) return;
 
+  // OBS: vi pausar ALDRIG live-videoelementet här längre. WebRTC-strömmen
+  // (js/webrtc.js) fortsätter rulla i bakgrunden så fort Herrarnas sänder,
+  // oavsett vilket läge admin valt — vi styr bara om ljudet hörs. Att
+  // pausa videon och sedan aldrig starta om den var orsaken till att
+  // bilden blev svart efter ett lägesbyte.
   if (mode === 'live') {
     liveVideo.muted = false;
     liveVideo.volume = 1;
-    return;
+  } else {
+    liveVideo.muted = true;
+    liveVideo.volume = 0;
   }
 
-  liveVideo.muted = true;
-  liveVideo.volume = 0;
-  if (!liveVideo.paused) {
-    liveVideo.pause();
+  // Självläkning: om webbläsaren av någon anledning pausat videon
+  // (t.ex. bakgrundsflik), starta om den tyst — muted autoplay kräver
+  // aldrig en klick-interaktion.
+  if (liveVideo.paused && liveVideo.srcObject) {
+    const wantMuted = liveVideo.muted;
+    liveVideo.muted = true;
+    liveVideo.play().then(() => { liveVideo.muted = wantMuted; }).catch(() => {});
   }
 }
 
@@ -88,14 +98,22 @@ function syncIntroVideoState(previousMode, nextMode) {
   if (nextMode === 'intro') {
     if (previousMode !== 'intro' || introVideo.paused || introVideo.ended) {
       introVideo.currentTime = 0;
-      introVideo.muted = false;
-      introVideo.play().catch(() => {});
+      // Webbläsare tillåter alltid muted autoplay, men blockerar ofta en
+      // NY uppspelning MED ljud som inte utlösts av en klick-interaktion.
+      // Vi startar därför tyst och slår sedan på ljudet programmatiskt på
+      // en redan igångsatt uppspelning — det räknas inte som en ny
+      // "autoplay med ljud" och blockeras därför normalt inte.
+      introVideo.muted = true;
+      introVideo.play().then(() => {
+        introVideo.muted = false;
+      }).catch(err => console.warn('[screen] introVideo.play() misslyckades:', err));
     }
     return;
   }
 
   introVideo.pause();
   introVideo.currentTime = 0;
+  introVideo.muted = true;
 }
 
 function render() {
@@ -139,6 +157,10 @@ function initScreenPage() {
     HState.listenEventState(state => { SC_STATE = state; render(); });
     HState.listenParticipants(list => { SC_PARTICIPANTS = list; renderSelectedParticipant(); });
     HScreenRTC.initViewer($('#liveVideo'));
+    // Så fort en ny WebRTC-ström kopplas upp: synka ljud/volym direkt mot
+    // aktuellt läge (täcker fallet att admin redan klickat "LIVE" innan
+    // Herrarnas startade sändningen).
+    $('#liveVideo').addEventListener('hstream-connected', () => syncLiveVideoAudioState(SC_STATE.mode));
   });
 }
 
